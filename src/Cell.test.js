@@ -1,32 +1,45 @@
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import Cell from './Cell';
 
-// Helper function to create a cell and return both the rendered cell and the mock function
 const createCell = (isLit) => {
-    const mockFlipFunction = jest.fn();
-    const utils = render(<Cell isLit={isLit} flipCellsAroundMe={mockFlipFunction} />);
-    const cells = utils.getAllByRole('cell');
-    return { ...utils, cells, mockFlipFunction };
-}
+  const mockFlipFunction = jest.fn();
+  const utils = render(
+    <table>
+      <tbody>
+        <tr>
+          <Cell isLit={isLit} flipCellsAroundMe={mockFlipFunction} />
+        </tr>
+      </tbody>
+    </table>
+  );
+  const cells = utils.getAllByRole('cell');
+  return { ...utils, cells, mockFlipFunction };
+};
 
-test('renders Cell correctly', () => {
-    const mockFlipFunction = jest.fn();
-    render(
-      <table>
-        <tbody>
-          <tr>
-            <Cell isLit={true} flipCellsAroundMe={mockFlipFunction} />
-          </tr>
-        </tbody>
-      </table>
-    );
-  });
+test('renders without crashing', () => {
+  render(<Cell />);
+});
 
-test('flips cells when clicked', () => {
-    const { cells, mockFlipFunction } = createCell(true);
+test('calls the flipCellsAroundMe function when clicked', () => {
+  const { cells, mockFlipFunction } = createCell(false);
+  const cellElement = cells[0];
 
-    // Click on the first cell
-    fireEvent.click(cells[0]);
-    expect(mockFlipFunction).toHaveBeenCalled();
+  fireEvent.click(cellElement);
+  expect(mockFlipFunction).toHaveBeenCalledTimes(1);
+});
+
+test('renders with correct classes when lit', () => {
+  const { cells } = createCell(true);
+  const cellElement = cells[0];
+
+  expect(cellElement).toHaveClass('Cell');
+  expect(cellElement).toHaveClass('Cell-lit');
+});
+
+test('renders with correct classes when not lit', () => {
+  const { cells } = createCell(false);
+  const cellElement = cells[0];
+
+  expect(cellElement).toHaveClass('Cell');
+  expect(cellElement).not.toHaveClass('Cell-lit');
 });

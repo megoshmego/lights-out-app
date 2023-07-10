@@ -1,19 +1,18 @@
-// board.test.js
-
-import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
 import Board from './Board';
 
 test('flips cells when clicked', () => {
-  const { getByRole } = render(<Board nrows={5} ncols={5} chanceLightStartsOn={0.5} />);
-  const cellElement = getByRole('cell');
+  const { getAllByRole } = render(<Board nrows={5} ncols={5} chanceLightStartsOn={0.5} />);
+  const cellElements = getAllByRole('cell');
 
-  // Check the initial state of the cell
-  expect(cellElement).toHaveClass('Cell Cell-lit');
+  // Find a cell that is lit
+  const litCell = cellElements.find(cell => cell.classList.contains('Cell-lit'));
+  expect(litCell).toBeTruthy();
 
-  // Click the cell
-  fireEvent.click(cellElement);
+  // Simulate click event
+  fireEvent.click(litCell);
 
-  // Check that the cell's class changed
-  expect(cellElement).not.toHaveClass('Cell Cell-lit');
+  // Validate changes (This assumes that clicking changes the class. Adjust the test according to your implementation)
+  expect(litCell).toHaveClass('Cell');
+  expect(litCell).not.toHaveClass('Cell-lit');
 });
